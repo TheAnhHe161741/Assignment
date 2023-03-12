@@ -5,7 +5,7 @@
 
 package controller;
 
-import Dal.LoginDAL;
+import dao.LoginDAL;
 import entity.Account;
 import java.io.IOException;
 import java.io.PrintWriter;
