@@ -1,46 +1,67 @@
 <%-- 
-    Document   : register.jsp
-    Created on : Feb 6, 2023, 4:37:48 PM
-    Author     : pc
+    Document   : login
+    Created on : Feb 25, 2023, 10:44:24 PM
+    Author     : ADMIN
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <link rel="stylesheet" href="index.css">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>M.T.P shop</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <style>
+            .login-form {
+                width: 340px;
+                margin: 50px auto;
+                font-size: 15px;
+            }
+            .login-form form {
+                margin-bottom: 15px;
+                background: #f7f7f7;
+                box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+                padding: 30px;
+            }
+            .login-form h2 {
+                margin: 0 0 15px;
+            }
+            .form-control, .btn {
+                min-height: 38px;
+                border-radius: 2px;
+            }
+            .btn {
+                font-size: 15px;
+                font-weight: bold;
+            }
+        </style>
     </head>
     <body>
-        <section>
-            <div class="form-box">
-                <div class="form-value">
-                    <form action="LoginControl" method="post">
-
-                        <h2>Đăng Nhập</h2>
-                        <div class="inputbox">
-                            <ion-icon name="mail-outline"></ion-icon>
-                            <input type="text" name="username"  required/>
-                            <label for="">Tên Tài Khoản</label>
-                        </div>
-                        <div class="inputbox">
-                            <ion-icon name="lock-closed-outline"></ion-icon>
-                            <input type="password" name="password" required/>
-                            <label for="">Mật Khẩu</label>
-                        </div>
-                        <div class="forget">
-                            <label for=""><input type="checkbox">Nhớ mật khẩu  <a href="#">Quên mật khẩu</a></label>
-
-                        </div>
-                        <button>Đăng nhập</button>
-                        <div class="register">
-                            <p> Chưa có tài khoản <a href="register.jsp">Đăng kí</a></p>
-                        </div>
-                    </form>
+        <div class="login-form">
+            <form action="login" method="post">
+                <h2 class="text-center">Log in</h2>       
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="email" name="email" value="${param["email"]}" required="required">
                 </div>
-            </div>
-        </section>
-        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-        <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="password" name="pass" value="${param["pass"]}" required="required">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Log in</button>
+                </div>
+                <p style="color: red">${mess}</p>
+                <div class="clearfix">
+                    <label class="float-left form-check-label"><input type="checkbox"> Remember me</label>
+                    <a href="#" class="float-right">Forgot Password?</a>
+                </div>        
+            </form>
+            <p class="text-center"><a href="register">Create an Account</a></p>
+        </div>        
     </body>
 </html>
 
