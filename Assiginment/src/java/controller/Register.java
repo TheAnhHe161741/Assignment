@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -34,7 +35,7 @@ public class Register extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Register</title>");            
+            out.println("<title>Servlet Register</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet Register at " + request.getContextPath() + "</h1>");
@@ -55,8 +56,7 @@ public class Register extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        processRequest(request, response);
-request.getRequestDispatcher("login.jsp").forward(request, response);
+        request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 
     /**
@@ -70,27 +70,26 @@ request.getRequestDispatcher("login.jsp").forward(request, response);
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        processRequest(request, response);
-String fullname =request.getParameter("fullname");
-String uname =request.getParameter("uname");
-String pass =request.getParameter("pass");
-String cfpass=request.getParameter("cfpass");
-String gender=request.getParameter("gender");
-String email =request.getParameter("email");
-String address=request.getParameter("address");
-String agr=request.getParameter("agr");
-String mess="mat khau dung";
-if(agr==null){
-    agr="toi khong dong y";
-}
-if(!pass.equals(cfpass)){
-    mess="mat khau khong thoa man";
-    }
-
-
-request.getRequestDispatcher("register.jsp").forward(request, response);
-
-
+        // Get bien tu front-end (register.jsp) day ve 
+        String email = request.getParameter("email");
+        String name = request.getParameter("name");
+        String gender = request.getParameter("gender");
+        String phone = request.getParameter("phone");
+        String pass = request.getParameter("pass");
+        String repass = request.getParameter("repass");
+        String dob = request.getParameter("dob");
+        String address = request.getParameter("address");
+        // Call DAO
+        UserDAO dao = new UserDAO();
+        // Check pass match repass
+        if (pass.equals(repass)) { // matched -> cho register -> home
+            dao.register(email, name, gender, phone, pass, dob, address);
+            // Hien thi script thong bao Register user thanh cong --> day nguoi ve trang login
+            response.getWriter().print("<script> alert(\"Sign in Successfully!\"); window.location = \"login\";</script>");
+        } else { // not matched -> gui thong bao va ko cho register -> register
+            request.setAttribute("mess", "Please enter Password to match Repassword");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+        }
 
     }
 

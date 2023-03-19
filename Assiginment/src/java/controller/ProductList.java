@@ -22,49 +22,20 @@ import model.Product;
  */
 public class ProductList extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ProductList</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ProductList at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {        
+            throws ServletException, IOException {
         // Get bien tu front-end (productlist.jsp) day ve 
+        int pageNumber = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+        int pageSize = request.getParameter("pageSize") != null ? Integer.parseInt(request.getParameter("pageSize")) : 6;
+
         String search = request.getParameter("search");
         String cateId = request.getParameter("cateId");
         String pFrom = request.getParameter("pFrom");
         String pTo = request.getParameter("pTo");
+        String sortBy = request.getParameter("sortBy");
+        String sortDir = request.getParameter("sortDir");
+
         //dieu kien bien truyen vao rong truyen vao n 1 string ""
         if (search == null) {
             search = "";
@@ -80,25 +51,24 @@ public class ProductList extends HttpServlet {
         }
         // Call DAO
         ProductDAO dao = new ProductDAO();
-        ArrayList<Product> plist = dao.getProductByFilter(search, cateId, pFrom, pTo);
-        request.setAttribute("plist", plist);
+        ArrayList<Product> plist = dao.getProductByFilter(search, cateId, pFrom, pTo, sortBy, "", pageNumber, pageSize);
+        int totalProducts = dao.getTotalProduct(search, cateId, pFrom, pTo);
+        int totalPages = (int) Math.ceil((double) totalProducts / pageSize);
+
         ArrayList<Category> clist = dao.getAllCate();
         request.setAttribute("clist", clist);
-        // Xu ly Phan Trang 
-        int count = dao.count(search, cateId);
-        int pageSize = 1;
-        int endPage = 0;
-        endPage = count / pageSize;
-        if (count % pageSize != 0) {
-            endPage++;
-        }
-        request.setAttribute("endPage", endPage);
+        request.setAttribute("plist", plist);
 
-//        String indexString = request.getParameter("index");
-//        int index = Integer.parseInt(indexString);
-//        ArrayList<Product> listSearchCount = dao.searchByCount(search, cateId, index, pageSize);
-//        request.setAttribute("listSearchCount", listSearchCount);
-        request.getRequestDispatcher("productlist.jsp").forward(request, response);
+        request.setAttribute("search", search);
+        request.setAttribute("cateId", cateId);
+        request.setAttribute("pFrom", pFrom);
+        request.setAttribute("pTo", pTo);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("sortDir", sortDir);
+        request.setAttribute("currentPage", pageNumber);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("pageSize", pageSize);
+        request.getRequestDispatcher("category.jsp").forward(request, response);
     }
 
     /**
@@ -112,7 +82,6 @@ public class ProductList extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
     }
 
     /**

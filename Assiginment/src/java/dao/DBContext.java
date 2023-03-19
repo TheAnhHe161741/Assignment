@@ -1,3 +1,5 @@
+package dao;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,8 +14,8 @@ public class DBContext {
     public DBContext() {
         try {
             String user = "sa";
-            String pass = "12345";
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=Supermarketfashion";
+            String pass = "12345678";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=AssignSupermarket";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(url, user, pass);
         } catch (ClassNotFoundException | SQLException ex) {

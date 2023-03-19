@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -11,6 +12,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import model.Category;
 import model.User;
 
 /**
@@ -64,7 +67,10 @@ public class Home extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        ProductDAO dao = new ProductDAO();
+        request.setAttribute("plist", dao.getProductByFilter("", "", "0", String.valueOf(Double.MAX_VALUE), null, "", 1, 6));
+        request.setAttribute("clist", dao.getAllCate());
+        request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 
     /**
