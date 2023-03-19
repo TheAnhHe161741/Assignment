@@ -4,28 +4,42 @@
  */
 package dao;
 
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import entity.Category;
-import entity.Product;
+import model.Category;
+import model.Product;
 
-/**
- *
- * @author ADMIN
- */
 public class ProductDAO extends DBContext {
+    public static void main(String[] args) {
+        ProductDAO a = new ProductDAO();
+        for (Category category : a.getAllCate()) {
+            System.out.println(category.getName());
+        }
+    }
 
-    public ArrayList<Product> getProductByFilter(String search, String cateId, String pFrom, String pTo) {
+    public ArrayList<Product> getProductByFilter(String search, String cateId, String pFrom, String pTo, String sortBy, String sortDir, int page, int pageSize) {
         ArrayList<Product> list = new ArrayList<>();
         try {
+            // Calculate the start position for pagination
+            int start = (page - 1) * pageSize;
+
             // Create SQL String
             String sql = "SELECT * FROM Products, Category\n"
-                    + "  WHERE Products.category_id = Category.id AND Products.p_name LIKE ? AND Products.price BETWEEN " + pFrom + " AND " + pTo;
+                    + "WHERE Products.category_id = Category.id AND Products.p_name LIKE ? AND Products.price BETWEEN " + pFrom + " AND " + pTo;
             if (!cateId.isEmpty()) {
-                sql = sql + " and Products.category_id = " + cateId;
+                sql += " AND Products.category_id = " + cateId;
             }
+            if (sortBy == null || sortBy.isEmpty()) {
+                sortBy = "Products.id";
+            }
+            if (sortDir == null) {
+                sortDir = "";
+            }
+            // Add sorting criteria
+            sql += " ORDER BY " + sortBy + " " + sortDir;
+            // Add pagination
+            sql += " OFFSET " + start + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
             // Create Statement
             PreparedStatement stm = connection.prepareStatement(sql);
             stm.setString(1, "%" + search + "%");
@@ -41,6 +55,33 @@ public class ProductDAO extends DBContext {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public int getTotalProduct(String search, String cateId, String pFrom, String pTo) {
+        int total = 0;
+        try {
+            // Create SQL String
+            String sql = "SELECT COUNT(*) FROM Products, Category\n"
+                    + "  WHERE Products.category_id = Category.id AND Products.p_name LIKE ? AND Products.price BETWEEN " + pFrom + " AND " + pTo;
+            if (!cateId.isEmpty()) {
+                sql = sql + " and Products.category_id = " + cateId;
+            }
+
+            // Create Statement
+            PreparedStatement stm = connection.prepareStatement(sql);
+            stm.setString(1, "%" + search + "%");
+
+            // Execute Query
+            ResultSet rs = stm.executeQuery();
+
+            // Process Result
+            if (rs.next()) {
+                total = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return total;
     }
 
     public ArrayList<Category> getAllCate() {
@@ -159,38 +200,4 @@ public class ProductDAO extends DBContext {
         } catch (Exception e) {
         }
     }
-
-//    public ArrayList<Product> searchByCount(String search, String cateId, int index, int size) {
-//        ArrayList<Product> list = new ArrayList<>();
-//        try {
-//            // Create SQL String
-//            String sql = "WITH x AS (SELECT ROW_NUMBER() OVER (ORDER BY [create_date] DESC) as r, * FROM Products, Category WHERE Products.category_id = Category.id AND Products.p_name LIKE ?\n";
-//            if (!cateId.isEmpty()) {
-//                sql = sql + " AND Products.category_id = " + cateId;
-//            }
-//            String sql1 = sql + ") SELECT * FROM x WHERE r BETWEEN ?*3-2 and ? * 3";
-//            // Create Statement
-//            PreparedStatement stm = connection.prepareStatement(sql1);
-//            stm.setString(1, "%" + search + "%");
-//            stm.setInt(2, index);
-//            stm.setInt(3, index);
-//            // Execute Query
-//            ResultSet rs = stm.executeQuery();
-//            // Process Result
-//            while (rs.next()) {
-//                Product product = new Product(rs.getInt(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getDouble(6),
-//                        rs.getInt(7), rs.getString(8), rs.getString(9), rs.getString(10), rs.getDate(11), rs.getBoolean(12), rs.getInt(13), new Category(rs.getInt(14), rs.getString(15)));
-//                list.add(product);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return list;
-//    }
-//
-//    public static void main(String[] args) {
-//        ProductDAO dAO = new ProductDAO();
-//        int count = dAO.count("A", "");
-//        System.out.println(count);
-//    }
 }
